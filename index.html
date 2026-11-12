@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Dutch-Bangla Bank PLC.</title>
+    <!-- Put your logo image here for the browser tab icon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="headder.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="headder.png">
+    <link rel="apple-touch-icon" href="headder.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dbbl-blue: #0052a3;
+            --dbbl-red: #d32f2f;
+            --dbbl-green: #16a34a; 
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-light); 
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
+
+        .page-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .container { width: 100%; max-width: 1100px; padding: 0 20px; margin: 0 auto; }
+
+        /* ========== HEADER ========== */
+        header {
+            width: 100%;
+            background: linear-gradient(90deg, #faf0f2 0%, #ffffff 50%, #f0faf2 100%);
+            border-bottom: 1px solid #e8ecef;
+            padding: 14px 0; margin-bottom: 35px;
+            position: sticky; top: 0; z-index: 50;
+            transition: opacity 0.3s ease;
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        
+        .custom-logo { height: 38px; width: auto; max-width: 160px; object-fit: contain; display: block; }
+        
+        .desktop-title { font-size: 16px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.2px; }
+        .mobile-title { display: none; font-size: 17px; font-weight: 600; color: var(--text-dark); line-height: 1.3; }
+        
+        .header-right { display: flex; align-items: center; gap: 12px; border-left: 1px solid #e0e6ed; padding-left: 20px; }
+        .icon-circle {
+            width: 34px; height: 34px; border-radius: 50%; background-color: #E8F0FE;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .icon-circle svg { color: #1A56A0; stroke-width: 2; }
+        .header-right-text { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+
+        /* ========== LOADING SCREEN ========== */
+        #loading-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex: 1; width: 100%; background: var(--bg-light);
+        }
+        .spinner {
+            width: 35px; height: 35px; border: 3px solid #e2e8f0; border-top: 3px solid var(--dbbl-blue);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fetching-text { color: var(--text-gray); font-size: 14px; margin-bottom: 40px; }
+        
+        .skeleton-box {
+            width: 100%; max-width: 600px; background: var(--white); border: 1px solid #e2e8f0;
+            border-radius: 12px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .skeleton-bar {
+            height: 45px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%; border-radius: 8px; margin-bottom: 15px; animation: shimmer 1.5s infinite;
+        }
+        .skeleton-bar:last-child { margin-bottom: 0; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* ========== MAIN APP BODY ========== */
+        #main-app { display: none; width: 100%; flex: 1; }
+        .content-body {
+            display: flex; flex-direction: column; align-items: center; 
+            max-width: 1100px; margin: 0 auto; flex: 1; width: 100%;
+        }
+        
+        /* INTRO TEXT (Left aligned for Desktop) */
+        #intro-text { 
+            width: 100%; 
+            max-width: 750px; 
+            text-align: left; 
+            margin-bottom: 15px;
+        }
+        .badge {
+            background: #e8f5e9; color: var(--dbbl-green); padding: 6px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 12px;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .badge-dot { width: 6px; height: 6px; background-color: var(--dbbl-green); border-radius: 50%; }
+        .info-text { color: var(--text-gray); font-size: 15px; }
+
+        /* ========== STEP 1: FORM ========== */
+        #step-1 { width: 100%; max-width: 750px; }
+        .master-card {
+            width: 100%; background: var(--white); border: 1px solid var(--border-color);
+            border-radius: 16px; position: relative; overflow: hidden; margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); text-align: left;
+        }
+        .card-top-line {
+            height: 5px; width: 100%;
+            background: linear-gradient(to right, var(--dbbl-blue) 33.3%, var(--dbbl-red) 33.3% 66.6%, var(--dbbl-green) 66.6%);
+        }
+        .master-card-body { padding: 35px; }
+
+        .account-info-box {
+            background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px;
+            padding: 25px; display: flex; align-items: center; gap: 20px; margin-bottom: 35px;
+        }
+        .icon-box {
+            width: 55px; height: 55px; background: #e0e7ff; color: var(--dbbl-blue);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+        }
+        .account-details h4 { color: var(--dbbl-blue); font-size: 13px; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+        .account-details h2 { color: var(--text-dark); font-size: 24px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .account-details p { color: #475569; font-size: 16px; font-weight: 500; text-transform: uppercase; }
+
+        .form-area h3 { font-size: 18px; color: var(--text-dark); font-weight: 600; margin-bottom: 8px; }
+        .form-area > p { font-size: 15px; color: var(--text-gray); margin-bottom: 25px; }
+
+        .date-inputs { display: flex; gap: 20px; margin-bottom: 30px; }
+        .input-group { flex: 1; }
+        .input-group label {
+            display: flex; align-items: center; font-size: 12px; color: #475569;
+            font-weight: 600; margin-bottom: 10px; text-transform: uppercase;
+        }
+        .dot-blue { color: var(--dbbl-blue); font-size: 16px; margin-right: 6px; line-height: 1;}
+        .dot-red { color: var(--dbbl-red); font-size: 16px; margin-right: 6px; line-height: 1;}
+        .asterisk { color: var(--dbbl-red); margin-left: 4px; }
+
+        .input-field { position: relative; cursor: pointer; }
+        .input-field svg {
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+            color: #64748b; pointer-events: none;
+        }
+        .input-field input {
+            width: 100%; padding: 14px 15px 14px 45px; border: 1px solid #e2e8f0;
+            border-radius: 8px; background-color: #f8fafc; font-size: 15px; font-weight: 500;
+            color: var(--text-dark); outline: none; transition: border-color 0.2s; cursor: pointer;
+        }
+        .input-field input:focus { border-color: var(--dbbl-blue); background: #ffffff; box-shadow: 0 0 0 3px rgba(0, 82, 163, 0.1); }
+        .input-field input::placeholder { color: #94a3b8; font-weight: 400; }
+
+        .submit-btn {
+            width: 100%; background-color: var(--dbbl-blue); color: var(--white);
+            border: none; padding: 16px; border-radius: 8px; font-size: 16px;
+            font-weight: 600; cursor: pointer; display: flex; justify-content: center;
+            align-items: center; gap: 10px; transition: all 0.3s ease;
+        }
+        .submit-btn:hover:not(:disabled) { background-color: #004080; }
+        .submit-btn:disabled { cursor: not-allowed; }
+        .submit-btn.verifying { background-color: #5b9bd5; }
+        .btn-spinner {
+            width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid #ffffff; border-radius: 50%;
+            animation: spin 0.8s linear infinite; display: none;
+        }
+        .submit-btn.verifying .btn-spinner { display: block; }
+        .submit-btn.verifying .btn-icon { display: none; }
+
+
+        /* ========== STEP 2: RESULTS (SUCCESS) ========== */
+        #step-2 { 
+            display: none; 
+            width: 100%; 
+            max-width: 950px;
+        }
+
+        .results-grid {
+            display: grid; 
+            grid-template-columns: 1fr 1fr; /* Two Columns Desktop */
+            gap: 20px; 
+            width: 100%; 
+            margin-bottom: 40px;
+            align-items: stretch;
+        }
+
+        .result-card {
+            background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 18px 22px; display: flex; flex-direction: column; justify-content: center; 
+            gap: 8px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; 
+            transition: all 0.3s ease; cursor: default; min-height: 90px; 
+        }
+
+        .result-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08); transform: translateY(-2px);
+        }
+
+        .result-card .label { font-size: 13px; font-weight: 600; letter-spacing: 0.2px; margin: 0; }
+        .result-card .value { font-size: 17px; color: var(--text-dark); font-weight: 500; margin: 0; line-height: 1.3; }
+
+        .card-blue { border-left: 5px solid var(--dbbl-blue); }
+        .card-blue .label { color: var(--dbbl-blue); }
+        .card-blue:hover { background: linear-gradient(90deg, #e6f0fa 0%, #ffffff 18%); }
+
+        .card-red { border-left: 5px solid var(--dbbl-red); }
+        .card-red .label { color: var(--dbbl-red); }
+        .card-red:hover { background: linear-gradient(90deg, #fceaea 0%, #ffffff 18%); }
+
+        .card-green { border-left: 5px solid var(--dbbl-green); }
+        .card-green .label { color: var(--dbbl-green); }
+        .card-green:hover { background: linear-gradient(90deg, #e8f5e9 0%, #ffffff 18%); }
+
+
+        /* ========== STEP 3: ERROR CARD (FAILURE) ========== */
+        #step-3 { display: none; width: 100%; max-width: 600px; margin: auto; }
+        
+        .error-card { text-align: center; padding: 0; display: flex; flex-direction: column; justify-content: space-between;}
+        .error-content { padding: 45px 20px; }
+        
+        .error-logo { max-height: 50px; margin: 0 auto; display: block; }
+
+        .error-icon-circle {
+            width: 55px; height: 55px; border-radius: 50%; background-color: #fef2f2;
+            display: flex; align-items: center; justify-content: center; margin: 25px auto 15px auto;
+        }
+        .error-title { color: #0a192f; font-size: 20px; font-weight: 600; margin-bottom: 10px; }
+        .error-subtitle { color: #64748b; font-size: 15px; }
+
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+
+        /* ========== FOOTER ========== */
+        .footer-wrapper { width: 100%; margin-top: auto; overflow: hidden; transition: opacity 0.3s ease; }
+        .footer-line {
+            height: 4px; width: 100%;
+            background: linear-gradient(to right, #0056b3 0%, #7b1fa2 25%, #d32f2f 49.9%, #0056b3 50%, #7b1fa2 75%, #d32f2f 99.9%);
+            background-size: 200% 100%; animation: moveRightToLeft 3s linear infinite;
+        }
+        @keyframes moveRightToLeft { 0% { background-position: 0% 0%; } 100% { background-position: 100% 0%; } }
+        footer { background: var(--bg-light); padding: 20px; text-align: center; }
+        footer p { font-size: 14px; color: #555555; }
+
+
+        /* ========== DATE PICKER ========== */
+        #date-picker-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .dp-modal { background: #ffffff; width: 360px; max-width: 92vw; border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); animation: popIn 0.2s ease-out; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .dp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .dp-nav-btn { background: none; border: none; cursor: pointer; color: #333; display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 4px; }
+        .dp-nav-btn:hover { background: #f1f5f9; }
+        .dp-selectors { display: flex; gap: 10px; }
+        .custom-dropdown-container { position: relative; }
+        .custom-dropdown-trigger { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px 6px 12px; font-size: 15px; color: #1a1d20; cursor: pointer; min-width: 90px; }
+        .custom-dropdown-trigger svg { color: #64748b; width: 14px; }
+        .custom-dropdown-container.active .custom-dropdown-trigger { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.3); }
+        .custom-dropdown-menu { display: none; position: absolute; top: 110%; left: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1001; max-height: 240px; overflow-y: auto; width: 120px; padding: 8px 0; }
+        .custom-dropdown-container.active .custom-dropdown-menu { display: block; }
+        .custom-dropdown-menu::-webkit-scrollbar { width: 6px; }
+        .custom-dropdown-menu::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dropdown-item { padding: 10px 16px; font-size: 15px; color: #1e293b; cursor: pointer; text-align: left; }
+        .dropdown-item:hover { background: #f8fafc; }
+        .dropdown-item.selected { font-weight: 600; color: var(--dbbl-blue); background: #f1f5f9; }
+        .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-bottom: 5px; }
+        .dp-day-name { font-size: 13px; color: #64748b; font-weight: 500; margin-bottom: 8px; }
+        .dp-date { height: 36px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #1e293b; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .dp-date:hover:not(.disabled):not(.empty) { background: #f1f5f9; }
+        .dp-date.disabled { color: #cbd5e1; cursor: not-allowed; }
+        .dp-date.empty { cursor: default; }
+        .dp-date.selected { border-color: #cbd5e1; background-color: #e6f0f9; font-weight: 600; color: var(--text-dark); }
+        .dp-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f1f5f9; }
+        .dp-actions { display: flex; gap: 10px; }
+        .dp-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .dp-btn-clear { background: #fff; border: 1px solid #e2e8f0; color: #64748b; }
+        .dp-btn-cancel { background: #fff; border: 1px solid #e2e8f0; color: #1e293b; }
+        .dp-btn-done { background: #0056b3; border: 1px solid #0056b3; color: #fff; }
+        .dp-btn:hover { filter: brightness(0.95); }
+
+
+        /* ========== MOBILE RESPONSIVENESS ========== */
+        @media (max-width: 768px) {
+            header { padding: 15px 0; margin-bottom: 25px; box-shadow: 0 4px 15px -3px rgba(0,0,0,0.08); }
+            .desktop-title, .header-right { display: none; }
+            .mobile-title { display: block; }
+            .header-content { justify-content: flex-start; padding: 0 15px; }
+            
+            /* Center Intro Text specifically on mobile */
+            #intro-text { text-align: center; }
+            .badge { margin: 0 auto 15px auto; display: flex; width: max-content; }
+            .info-text { text-align: center; }
+            
+            .content-body { padding: 0 15px; }
+            .master-card-body { padding: 20px; }
+            .account-info-box { flex-direction: column; text-align: center; padding: 20px; gap: 15px; }
+            .date-inputs { flex-direction: column; gap: 20px; }
+            
+            /* Results grid becomes 1 column on mobile */
+            .results-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen">
+        <div class="page-wrapper" style="justify-content: center; padding: 0 20px;">
+            <div class="spinner"></div>
+            <p class="fetching-text">Fetching verification details...</p>
+            <div class="skeleton-box">
+                <div class="skeleton-bar"></div>
+                <div class="skeleton-bar"></div>
+                <div class="skeleton-bar"></div>
+                <div class="skeleton-bar"></div>
+            </div>
+        </div>
+        <div class="footer-wrapper">
+            <div class="footer-line"></div>
+            <footer><p>Copyright @ 2026. Dutch-Bangla Bank</p></footer>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app">
+        <div class="page-wrapper">
+            
+            <header id="main-header">
+                <div class="container header-content">
+                    <div class="logo-area">
+                        <!-- REPLACE "your-logo.png" WITH YOUR ACTUAL LOGO IMAGE -->
+                        <img src="your-logo.png" alt="Logo" class="custom-logo">
+                        
+                        <span class="desktop-title">Dutch-Bangla Bank PLC.</span>
+                        <span class="mobile-title">Account Statement<br>Verification</span>
+                    </div>
+                    
+                    <div class="header-right">
+                        <div class="icon-circle">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="6" y1="9" x2="10" y2="9"></line>
+                                <line x1="6" y1="13" x2="14" y2="13"></line>
+                                <circle cx="17" cy="11" r="1.5" fill="currentColor" stroke="none"></circle>
+                            </svg>
+                        </div>
+                        <span class="header-right-text">Account Statement Verification</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container content-body">
+                
+                <!-- Info Text (Left aligned PC, Centered Mobile) -->
+                <div id="intro-text">
+                    <div class="badge"><div class="badge-dot"></div> VERIFICATION DETAILS</div>
+                    <p class="info-text">The following information was retrieved from the scanned QR Code and verified.</p>
+                </div>
+
+                <!-- ================== STEP 1: FORM ================== -->
+                <div id="step-1" class="master-card">
+                    <div class="card-top-line"></div>
+                    
+                    <div class="master-card-body">
+                        <div class="account-info-box">
+                            <div class="icon-box">
+                                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="21" width="18" height="2"></rect>
+                                    <polygon points="12 4 3 9 21 9"></polygon>
+                                    <line x1="6" y1="11" x2="6" y2="18"></line>
+                                    <line x1="10" y1="11" x2="10" y2="18"></line>
+                                    <line x1="14" y1="11" x2="14" y2="18"></line>
+                                    <line x1="18" y1="11" x2="18" y2="18"></line>
+                                </svg>
+                            </div>
+                            <div class="account-details">
+                                <h4>Account No</h4>
+                                <h2>2281100025726</h2>
+                                <p>M/S MIA ENTERPRISE</p>
+                            </div>
+                        </div>
+
+                        <div class="form-area">
+                            <h3>Select Date Range</h3>
+                            <p>Select the from and to dates mentioned in the document to verify it.</p>
+
+                            <div class="date-inputs">
+                                <div class="input-group">
+                                    <label><span class="dot-blue">•</span> FROM DATE <span class="asterisk">*</span></label>
+                                    <div class="input-field" onclick="openDatePicker('fromDate')">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                        <input type="text" id="fromDate" placeholder="DD-MM-YYYY" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label><span class="dot-red">•</span> TO DATE <span class="asterisk">*</span></label>
+                                    <div class="input-field" onclick="openDatePicker('toDate')">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                        <input type="text" id="toDate" placeholder="DD-MM-YYYY" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="submit-btn" id="submitBtn" onclick="submitForm()">
+                                <div class="btn-spinner"></div>
+                                <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    <path d="M9 12l2 2 4-4"></path>
+                                </svg>
+                                <span id="btnText">Submit</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================== STEP 2: RESULTS (SUCCESS) ================== -->
+                <div id="step-2">
+                    <div class="results-grid">
+                        
+                        <div class="result-card card-blue" title="2281100025726">
+                            <span class="label">Account No</span>
+                            <span class="value">2281100025726</span>
+                        </div>
+                        
+                        <div class="result-card card-red" title="M/S MIA ENTERPRISE">
+                            <span class="label">Account Name</span>
+                            <span class="value">M/S MIA ENTERPRISE</span>
+                        </div>
+                        
+                        <div class="result-card card-green" title="1,382.18">
+                            <span class="label">Opening Balance</span>
+                            <span class="value">1,38,218.00</span>
+                        </div>
+                        
+                        <div class="result-card card-blue" title="2,041.68">
+                            <span class="label">Closing Balance</span>
+                            <span class="value">2,04,168.76</span>
+                        </div>
+                        
+                        <div class="result-card card-red" title="11-Oct-2026">
+                            <span class="label">Report Generation Date</span>
+                            <span class="value">11-Oct-2026</span>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- ================== STEP 3: ERROR CARD (FAILURE) ================== -->
+                <div id="step-3">
+                    <div class="master-card error-card">
+                        <div class="card-top-line"></div>
+                        
+                        <div class="error-content">
+                            <!-- REPLACE "your-logo.png" WITH YOUR ACTUAL LOGO IMAGE -->
+                            <img src="your-logo.png" alt="Logo" class="custom-logo error-logo">
+
+                            <div class="error-icon-circle">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                            </div>
+
+                            <h2 class="error-title">Verification Failed</h2>
+                            <p class="error-subtitle">Session Timed Out!</p>
+                        </div>
+                        
+                        <div class="card-top-line"></div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="footer-wrapper" id="main-footer">
+                <div class="footer-line"></div>
+                <footer><p>Copyright @ 2026. Dutch-Bangla Bank</p></footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATE PICKER MODAL -->
+    <div id="date-picker-overlay">
+        <div class="dp-modal">
+            <div class="dp-header">
+                <button class="dp-nav-btn" onclick="prevMonth()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                
+                <div class="dp-selectors">
+                    <div class="custom-dropdown-container" id="month-dropdown-container">
+                        <div class="custom-dropdown-trigger" onclick="toggleDropdown('month')">
+                            <span id="display-month">January</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                        <div class="custom-dropdown-menu" id="month-list"></div>
+                    </div>
+                    <div class="custom-dropdown-container" id="year-dropdown-container">
+                        <div class="custom-dropdown-trigger" onclick="toggleDropdown('year')">
+                            <span id="display-year">2026</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                        <div class="custom-dropdown-menu" id="year-list" style="width: 90px;"></div>
+                    </div>
+                </div>
+
+                <button class="dp-nav-btn" onclick="nextMonth()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+
+            <div class="dp-grid" id="dp-days-grid">
+                <div class="dp-day-name">Su</div><div class="dp-day-name">Mo</div><div class="dp-day-name">Tu</div>
+                <div class="dp-day-name">We</div><div class="dp-day-name">Th</div><div class="dp-day-name">Fr</div><div class="dp-day-name">Sa</div>
+            </div>
+
+            <div class="dp-footer">
+                <button class="dp-btn dp-btn-clear" onclick="clearDate()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Clear
+                </button>
+                <div class="dp-actions">
+                    <button class="dp-btn dp-btn-cancel" onclick="closeDatePicker()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Cancel
+                    </button>
+                    <button class="dp-btn dp-btn-done" style="background-color: #dc3545; color: #ffffff;" onclick="applyDate()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Done
+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'flex';
+            }, 2000); 
+            initDatePicker();
+        });
+
+        // ================== DATE PICKER LOGIC ==================
+        let currentTargetInputId = null;
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const monthShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        let selectedDay = 1, selectedMonth = 0, selectedYear = 2026; 
+
+        function initDatePicker() { populateMonths(); populateYears(); updateDropdownDisplays(); generateCalendarGrid(); }
+
+        function populateMonths() {
+            const list = document.getElementById('month-list'); list.innerHTML = '';
+            monthNames.forEach((m, i) => {
+                let d = document.createElement('div');
+                d.className = 'dropdown-item' + (i === selectedMonth ? ' selected' : '');
+                d.innerText = m;
+                d.onclick = (e) => { e.stopPropagation(); selectedMonth = i; updateDropdownDisplays(); generateCalendarGrid(); toggleDropdown('month'); populateMonths(); };
+                list.appendChild(d);
+            });
+        }
+
+        function populateYears() {
+            const list = document.getElementById('year-list'); list.innerHTML = '';
+            for (let y = 2035; y >= 1920; y--) {
+                let d = document.createElement('div');
+                d.className = 'dropdown-item' + (y === selectedYear ? ' selected' : '');
+                d.innerText = y;
+                d.onclick = (e) => { e.stopPropagation(); selectedYear = y; updateDropdownDisplays(); generateCalendarGrid(); toggleDropdown('year'); populateYears(); };
+                list.appendChild(d);
+            }
+        }
+
+        function updateDropdownDisplays() {
+            document.getElementById('display-month').innerText = monthNames[selectedMonth];
+            document.getElementById('display-year').innerText = selectedYear;
+        }
+
+        function toggleDropdown(type) {
+            const m = document.getElementById('month-dropdown-container'); const y = document.getElementById('year-dropdown-container');
+            if (type === 'month') { y.classList.remove('active'); m.classList.toggle('active'); }
+            else { m.classList.remove('active'); y.classList.toggle('active'); }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-dropdown-container')) {
+                document.getElementById('month-dropdown-container').classList.remove('active');
+                document.getElementById('year-dropdown-container').classList.remove('active');
+            }
+        });
+
+        function generateCalendarGrid() {
+            const grid = document.getElementById('dp-days-grid');
+            while (grid.children.length > 7) grid.removeChild(grid.lastChild);
+            const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+            const firstDay = new Date(selectedYear, selectedMonth, 1).getDay();
+
+            for (let i = 0; i < firstDay; i++) { let d = document.createElement('div'); d.className = 'dp-date empty'; grid.appendChild(d); }
+            for (let i = 1; i <= daysInMonth; i++) {
+                let d = document.createElement('div'); d.className = 'dp-date'; d.innerText = i;
+                d.onclick = () => selectDay(i); if (i === selectedDay) d.classList.add('selected');
+                grid.appendChild(d);
+            }
+        }
+
+        function selectDay(day) { selectedDay = day; generateCalendarGrid(); }
+        function prevMonth() { selectedMonth--; if (selectedMonth < 0) { selectedMonth = 11; selectedYear--; } populateMonths(); populateYears(); updateDropdownDisplays(); generateCalendarGrid(); }
+        function nextMonth() { selectedMonth++; if (selectedMonth > 11) { selectedMonth = 0; selectedYear++; } populateMonths(); populateYears(); updateDropdownDisplays(); generateCalendarGrid(); }
+
+        function openDatePicker(id) { currentTargetInputId = id; document.getElementById('date-picker-overlay').style.display = 'flex'; }
+        function closeDatePicker() { document.getElementById('date-picker-overlay').style.display = 'none'; currentTargetInputId = null; document.getElementById('month-dropdown-container').classList.remove('active'); document.getElementById('year-dropdown-container').classList.remove('active'); }
+        function clearDate() { if (currentTargetInputId) document.getElementById(currentTargetInputId).value = ''; closeDatePicker(); }
+
+        function applyDate() {
+            if (currentTargetInputId) {
+                let dayStr = selectedDay < 10 ? '0' + selectedDay : selectedDay;
+                let formatted = `${monthShort[selectedMonth]} ${dayStr}, ${selectedYear}`;
+                document.getElementById(currentTargetInputId).value = formatted;
+            }
+            closeDatePicker();
+        }
+
+        document.getElementById('date-picker-overlay').addEventListener('click', function(e) { if (e.target === this) closeDatePicker(); });
+
+
+        // ================== LOGIC: SUCCESS vs FAILURE ==================
+        function submitForm() {
+            const fromDate = document.getElementById('fromDate').value.trim();
+            const toDate = document.getElementById('toDate').value.trim();
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+
+            if (!fromDate || !toDate) {
+                alert('Please select both From Date and To Date.');
+                return;
+            }
+
+            btn.classList.add('verifying');
+            btn.disabled = true;
+            btnText.innerText = 'Verifying...';
+
+            setTimeout(() => {
+                
+                // Hide Form ONLY
+                document.getElementById('step-1').style.display = 'none';
+                
+                // CHECK DATES: Must be EXACTLY "Jan 01, 2026" and "Oct 02, 2026"
+                if (fromDate === "Jan 01, 2026" && toDate === "Oct 02, 2026") {
+                    
+                    // SUCCESS - Show Results Grid, Keep Intro Text visible
+                    const step2 = document.getElementById('step-2');
+                    step2.style.display = 'block';
+                    step2.classList.add('animate-slide-up');
+
+                } else {
+                    
+                    // FAILURE - Hide Header, Footer, and Intro text
+                    document.getElementById('intro-text').style.display = 'none';
+                    document.getElementById('main-header').style.display = 'none';
+                    document.getElementById('main-footer').style.display = 'none';
+
+                    const step3 = document.getElementById('step-3');
+                    step3.style.display = 'block';
+                    step3.classList.add('animate-slide-up');
+                    
+                    // Center the error card vertically since header/footer are gone
+                    document.querySelector('.content-body').style.justifyContent = 'center';
+
+                }
+
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
