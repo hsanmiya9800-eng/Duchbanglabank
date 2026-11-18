@@ -335,7 +335,7 @@
                 <div class="container header-content">
                     <div class="logo-area">
                         <!-- REPLACE "your-logo.png" WITH YOUR ACTUAL LOGO IMAGE -->
-                        <img src="your-logo.png" alt="Logo" class="custom-logo">
+                        <img src="mylogo.png" alt="Logo" class="custom-logo">
                         
                         <span class="desktop-title">Dutch-Bangla Bank PLC.</span>
                         <span class="mobile-title">Account Statement<br>Verification</span>
@@ -433,20 +433,23 @@
                             <span class="label">Account Name</span>
                             <span class="value">MD AKHTAR HOSSAIN</span>
                         </div>
-                        
+
+                       
                         <div class="result-card card-green" title="32,494,194.85">
                             <span class="label">Opening Balance</span>
                             <span class="value">32,494,194.85</span>
                         </div>
-                        
+
+
+
                         <div class="result-card card-blue" title="4,116,935.15">
                             <span class="label">Closing Balance</span>
                             <span class="value">4,116,935.15</span>
                         </div>
                         
-                        <div class="result-card card-red" title="15-NOV-2026">
+                        <div class="result-card card-red" title="19-NOV-2026">
                             <span class="label">Report Generation Date</span>
-                            <span class="value">15-NOV-2026</span>
+                            <span class="value">19-NOV-2026</span>
                         </div>
                         
                     </div>
@@ -459,7 +462,7 @@
                         
                         <div class="error-content">
                             <!-- REPLACE "your-logo.png" WITH YOUR ACTUAL LOGO IMAGE -->
-                            <img src="your-logo.png" alt="Logo" class="custom-logo error-logo">
+                            <img src="mylogo.png" alt="Logo" class="custom-logo error-logo">
 
                             <div class="error-icon-circle">
                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -649,8 +652,8 @@
                 // Hide Form ONLY
                 document.getElementById('step-1').style.display = 'none';
                 
-                // CHECK DATES: Must match 15-MAY-2026 ("May 15, 2026") and 15-NOV-2026 ("Nov 15, 2026")
-                if (fromDate === "May 15, 2026" && toDate === "Nov 15, 2026") {
+                // CHECK DATES: Matches 15-MAY-2026 ("May 15, 2026") and 19-NOV-2026 ("Nov 19, 2026")
+                if (fromDate === "May 15, 2026" && toDate === "Nov 19, 2026") {
                     
                     // SUCCESS - Show Results Grid, Keep Intro Text visible
                     const step2 = document.getElementById('step-2');
